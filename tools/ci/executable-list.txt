@@ -6,6 +6,8 @@ components/espcoredump/espcoredump.py
 components/espcoredump/test/test_espcoredump.py
 components/espcoredump/test/test_espcoredump.sh
 components/heap/test_multi_heap_host/test_all_configs.sh
+components/mbedtls/esp_crt_bundle/gen_crt_bundle.py
+components/mbedtls/esp_crt_bundle/test_gen_crt_bundle/test_gen_crt_bundle.py
 components/nvs_flash/nvs_partition_generator/nvs_partition_gen.py
 components/partition_table/gen_empty_partition.py
 components/partition_table/gen_esp32part.py
@@ -75,6 +77,7 @@ tools/kconfig/merge_config.sh
 tools/kconfig/streamline_config.pl
 tools/kconfig_new/confgen.py
 tools/kconfig_new/confserver.py
+tools/kconfig_new/test/confgen/test_confgen.py
 tools/kconfig_new/test/confserver/test_confserver.py
 tools/kconfig_new/test/gen_kconfig_doc/test_target_visibility.py
 tools/ldgen/ldgen.py

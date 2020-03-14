@@ -53,6 +53,7 @@ extensions = ['breathe',
 
               'extensions.html_redirects',
               'extensions.toctree_filter',
+              'extensions.list_filter',
 
               'idf_extensions.include_build_file',
               'idf_extensions.link_roles',
@@ -147,6 +148,8 @@ def update_exclude_patterns(tags):
                   'api-reference/protocols/esp_serial_slave_link.rst',
                   'api-reference/system/ipc.rst',
                   'get-started-legacy/**',
+                  'security/secure-boot-v1.rst',
+                  'security/secure-boot-v2.rst',
                   'gnu-make-legacy.rst',
                   'hw-reference/esp32/**',
                   ]:

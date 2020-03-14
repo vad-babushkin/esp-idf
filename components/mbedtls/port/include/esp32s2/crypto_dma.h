@@ -31,8 +31,8 @@ extern "C" {
 /* Since crypto DMA is shared between DMA-AES and SHA blocks
  * Needs to be taken by respective blocks before using Crypto DMA
  */
-extern portMUX_TYPE crypto_dma_spinlock;
- 
+extern _lock_t crypto_dma_lock;
+
 #ifdef __cplusplus
 }
 #endif

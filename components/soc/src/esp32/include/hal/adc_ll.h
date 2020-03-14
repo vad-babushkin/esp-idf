@@ -203,18 +203,16 @@ static inline void adc_ll_set_pattern_table_len(adc_ll_num_t adc_n, uint32_t pat
  */
 static inline void adc_ll_set_pattern_table(adc_ll_num_t adc_n, uint32_t pattern_index, adc_ll_pattern_table_t pattern)
 {
-    uint32_t tab;
-    uint8_t *arg;
+    const uint32_t patt_tab_idx = pattern_index / 4;
+    const uint32_t patt_shift   = (3 - (pattern_index % 4)) * 8;
+    const uint32_t patt_mask    = 0xFF << patt_shift;
+
     if (adc_n == ADC_NUM_1) {
-        tab = SYSCON.saradc_sar1_patt_tab[pattern_index / 4];
-        arg = (uint8_t *)&tab;
-        arg[pattern_index % 4] = pattern.val;
-        SYSCON.saradc_sar1_patt_tab[pattern_index / 4] = tab;
+        SYSCON.saradc_sar1_patt_tab[patt_tab_idx] &= ~patt_mask;
+        SYSCON.saradc_sar1_patt_tab[patt_tab_idx] |= pattern.val << patt_shift;
     } else { // adc_n == ADC_NUM_2
-        tab = SYSCON.saradc_sar2_patt_tab[pattern_index / 4];
-        arg = (uint8_t *)&tab;
-        arg[pattern_index % 4] = pattern.val;
-        SYSCON.saradc_sar2_patt_tab[pattern_index / 4] = tab;
+        SYSCON.saradc_sar2_patt_tab[patt_tab_idx] &= ~patt_mask;
+        SYSCON.saradc_sar2_patt_tab[patt_tab_idx] |= pattern.val << patt_shift;
     }
 }
 
@@ -435,16 +433,30 @@ static inline void adc_ll_set_atten(adc_ll_num_t adc_n, adc_channel_t channel, a
 }
 
 /**
- * ADC module output data invert or not.
+ * ADC module RTC output data invert or not.
  *
  * @prarm adc_n ADC unit.
  */
-static inline void adc_ll_output_invert(adc_ll_num_t adc_n, bool inv_en)
+static inline void adc_ll_rtc_output_invert(adc_ll_num_t adc_n, bool inv_en)
 {
     if (adc_n == ADC_NUM_1) {
         SENS.sar_read_ctrl.sar1_data_inv = inv_en;   // Enable / Disable ADC data invert
     } else { // adc_n == ADC_NUM_2
         SENS.sar_read_ctrl2.sar2_data_inv = inv_en;  // Enable / Disable ADC data invert
+    }
+}
+
+/**
+ * ADC module Digital output data invert or not.
+ *
+ * @prarm adc_n ADC unit.
+ */
+static inline void adc_ll_dig_output_invert(adc_ll_num_t adc_n, bool inv_en)
+{
+    if (adc_n == ADC_NUM_1) {
+        SYSCON.saradc_ctrl2.sar1_inv = inv_en;   // Enable / Disable ADC data invert
+    } else { // adc_n == ADC_NUM_2
+        SYSCON.saradc_ctrl2.sar2_inv = inv_en;  // Enable / Disable ADC data invert
     }
 }
 

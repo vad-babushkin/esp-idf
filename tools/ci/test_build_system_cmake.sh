@@ -249,6 +249,19 @@ function run_tests()
     (cd build && cmake -G "Unix Makefiles" .. && make) || failure "Make build failed"
     assert_built ${APP_BINS} ${BOOTLOADER_BINS} ${PARTITION_BIN}
 
+    print_status "idf.py can build with Ninja"
+    clean_build_dir
+    idf.py -G Ninja build  || failure "idf.py cannot build with Ninja"
+    grep "CMAKE_GENERATOR:INTERNAL=Ninja" build/CMakeCache.txt || failure "Ninja is not set in CMakeCache.txt"
+    assert_built ${APP_BINS} ${BOOTLOADER_BINS} ${PARTITION_BIN}
+
+    print_status "idf.py can build with Unix Makefiles"
+    clean_build_dir
+    mkdir build
+    idf.py -G "Unix Makefiles" build || failure "idf.py cannot build with Unix Makefiles"
+    grep "CMAKE_GENERATOR:INTERNAL=Unix Makefiles" build/CMakeCache.txt || failure "Unix Makefiles are not set in CMakeCache.txt"
+    assert_built ${APP_BINS} ${BOOTLOADER_BINS} ${PARTITION_BIN}
+
     print_status "Can build with IDF_PATH set via cmake cache not environment"
     clean_build_dir
     ${SED} -i.bak 's/ENV{IDF_PATH}/{IDF_PATH}/' CMakeLists.txt
@@ -447,6 +460,10 @@ function run_tests()
     (grep '"command"' build/compile_commands.json | grep -v mfix-esp32-psram-cache-issue) && failure "All commands in compile_commands.json should use PSRAM cache workaround"
     rm -r build
 
+    print_status "Displays partition table when executing target partition_table"
+    idf.py partition_table | grep -E "# ESP-IDF .+ Partition Table"
+    rm -r build
+
     print_status "Make sure a full build never runs '/usr/bin/env python' or similar"
     OLDPATH="$PATH"
     PYTHON="$(which python)"
@@ -632,8 +649,8 @@ endmenu\n" >> ${IDF_PATH}/Kconfig
     printf "\n#include \"test_component.h\"\n" >> main/main.c
     printf "dependencies:\n  test_component:\n    path: test_component\n    git: ${COMPONENT_MANAGER_TEST_REPO}\n" >> idf_project.yml
     ! idf.py build || failure "Build should fail if dependencies are not installed"
-    pip install ${COMPONENT_MANAGER_REPO}
-    idf.py reconfigure build || failure "Build succeeds once requirements are installed"
+    pip install ${COMPONENT_MANAGER_REPO} || failure "Failed to install the component manager"
+    idf.py reconfigure build || failure "Build didn't succeed with required components installed by package manager"
     pip uninstall -y idf_component_manager
     rm idf_project.yml
     git checkout main/main.c

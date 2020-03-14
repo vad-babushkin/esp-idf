@@ -72,6 +72,7 @@
         ESP-WROVER-KIT <../hw-reference/esp32/get-started-wrover-kit>
         ESP32-PICO-KIT <../hw-reference/esp32/get-started-pico-kit>
         ESP32-Ethernet-Kit <../hw-reference/esp32/get-started-ethernet-kit>
+        ESP32-DevKit-S(-R) <../hw-reference/esp32/user-guide-devkits-r-v1.1>
 
 
 .. _get-started-step-by-step:
@@ -310,8 +311,6 @@ Linux 和 MacOS 操作系统
 
     cd ~/esp/hello_world
     idf.py menuconfig
-
-如果您的默认 Python 版本为 3.0 及以上，可能需要运行 ``python2 $(which idf.py) menuconfig``。
 
 Windows 操作系统
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

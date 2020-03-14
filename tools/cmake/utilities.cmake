@@ -214,12 +214,36 @@ function(fail_at_build_time target_name message_line0)
     set(filename "${CMAKE_CURRENT_BINARY_DIR}/${filename}.cmake")
     file(WRITE "${filename}" "")
     include("${filename}")
+    set(fail_message "Failing the build (see errors on lines above)")
     add_custom_target(${target_name} ALL
         ${message_lines}
         COMMAND ${CMAKE_COMMAND} -E remove "${filename}"
-        COMMAND ${CMAKE_COMMAND} -P ${idf_path}/tools/cmake/scripts/fail.cmake
+        COMMAND ${CMAKE_COMMAND} -E env FAIL_MESSAGE=${fail_message}
+                ${CMAKE_COMMAND} -P ${idf_path}/tools/cmake/scripts/fail.cmake
         VERBATIM)
 endfunction()
+
+# fail_target
+#
+# Creates a phony target which fails when invoked. This is used when the necessary conditions
+# for a target are not met, such as configuration. Rather than ommitting the target altogether,
+# we fail execution with a helpful message.
+function(fail_target target_name message_line0)
+    idf_build_get_property(idf_path IDF_PATH)
+    set(message_lines COMMAND ${CMAKE_COMMAND} -E echo "${message_line0}")
+    foreach(message_line ${ARGN})
+        set(message_lines ${message_lines} COMMAND ${CMAKE_COMMAND} -E echo "${message_line}")
+    endforeach()
+    # Generate a timestamp file that gets included. When deleted on build, this forces CMake
+    # to rerun.
+    set(fail_message "Failed executing target (see errors on lines above)")
+    add_custom_target(${target_name}
+        ${message_lines}
+        COMMAND ${CMAKE_COMMAND} -E env FAIL_MESSAGE=${fail_message}
+                ${CMAKE_COMMAND} -P ${idf_path}/tools/cmake/scripts/fail.cmake
+        VERBATIM)
+endfunction()
+
 
 function(check_exclusive_args args prefix)
     set(_args ${args})
@@ -302,4 +326,17 @@ function(file_generate output)
 
     set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${output}")
+endfunction()
+
+# add_subdirectory_if_exists
+#
+# Like add_subdirectory, but only proceeds if the given source directory exists.
+function(add_subdirectory_if_exists source_dir)
+    get_filename_component(abs_dir "${source_dir}"
+        ABSOLUTE BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+    if(EXISTS "${abs_dir}")
+        add_subdirectory("${source_dir}" ${ARGN})
+    else()
+        message(STATUS "Subdirectory '${abs_dir}' does not exist, skipped.")
+    endif()
 endfunction()

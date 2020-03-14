@@ -270,9 +270,13 @@
 #define SOC_DIRAM_DRAM_LOW    0x3FFB0000
 #define SOC_DIRAM_DRAM_HIGH   0x40000000
 
-// Region of memory accessible via DMA. See esp_ptr_dma_capable().
+// Region of memory accessible via DMA in internal memory. See esp_ptr_dma_capable().
 #define SOC_DMA_LOW  0x3FFB0000
 #define SOC_DMA_HIGH 0x40000000
+
+// Region of memory accessible via DMA in external memory. See esp_ptr_dma_ext_capable().
+#define SOC_DMA_EXT_LOW     0x3F500000
+#define SOC_DMA_EXT_HIGH    0x3FF80000
 
 // Region of memory that is byte-accessible. See esp_ptr_byte_accessible().
 #define SOC_BYTE_ACCESSIBLE_LOW     0x3FF9E000
@@ -282,6 +286,9 @@
 //(excluding RTC data region, that's checked separately.) See esp_ptr_internal().
 #define SOC_MEM_INTERNAL_LOW        0x3FF9E000
 #define SOC_MEM_INTERNAL_HIGH       0x40072000
+
+// Start (highest address) of ROM boot stack, only relevant during early boot
+#define SOC_ROM_STACK_START         0x3fffe70c
 
 //interrupt cpu using table, Please see the core-isa.h
 /*************************************************************************************************************
